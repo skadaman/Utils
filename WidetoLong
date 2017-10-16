@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May 22 10:30:17 2017
+
+@author: sxk94
+"""
+
+import pandas as pd
+import numpy as np
+
+raw=pd.read_excel(r"\\ascendanalytics.com\users\sxk94\Python\AES\Tunjita_Inflows.xlsx",header=1)
+raw=raw.unstack()
+raw=pd.wide_to_long(raw,['0:'],i='index',j='Hour')
+#%%
+def transpose_hours(df):
+    transposed = pd.Series()
+    for date in df.index:
+        hours = pd.Series(df.loc[date,:].values.T)
+        transposed = transposed.append(hours)
+    dates = pd.date_range(start=df.index[0], periods=len(df.index)*24, freq='H')
+    transposed = pd.DataFrame(index=dates, data={'flows': transposed.values})
+    return transposed
+
+transposed = transpose_hours(raw)
+transposed['hour'] = transposed.index.map(lambda d: d.hour+1)
+print(transposed.head())
+
+#%%
+transposed.to_csv(r'\\ascendanalytics.com\users\sxk94\Python\AES\transposedflows.csv')
