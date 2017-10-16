@@ -1,0 +1,19 @@
+import pandas as pd
+import glob
+import datetime
+#File concatenation
+
+output=r'\\ascendanalytics.com\users\sxk94\Mexico\Data\Appended\Full_RTAnci.csv'
+inputs=r'\\ascendanalytics.com\users\sxk94\Mexico\Data\Raw\RTAncilliaries\*.csv'
+startdate='01/27/2017'
+
+files= glob.iglob(inputs)
+df_list = []
+d=pd.to_datetime(startdate, format='%m/%d/%Y')
+for filename in files:
+    df=pd.read_csv(filename, header=7)
+    df['Date']=d
+    d+=datetime.timedelta(days=1)
+    df_list.append(df)
+    raw=pd.concat(df_list)
+raw.to_csv(output)
